@@ -640,20 +640,21 @@ private float animationTimer = 0f;
 result.update(level, score, moves);
         busy = false;
 
-        if (moves <= 0) {
+        
+        resolveMatches();
+result.update(level, score, moves);
+busy = false;
 
-            if (score >= level * LEVEL_SCORE) {
+if (moves <= 0) {
 
-                level++;
-                moves = START_MOVES;
-            } else {
-
-                level = 1;
-                score = 0;
-                moves = START_MOVES;
-            }
-        }
+    if (score >= level * LEVEL_SCORE) {
+        result.update(level, score, moves);
+        result.win();
+    } else {
+        result.update(level, score, moves);
+        result.lose();
     }
+}
 
     private void swap(
             int row1,
