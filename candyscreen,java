@@ -437,7 +437,76 @@ private float animationTimer = 0f;
                     targetCol
             )) {
 
-                trySwap(
+                private void trySwap(
+        int row1,
+        int col1,
+        int row2,
+        int col2
+) {
+
+    if (busy) {
+        return;
+    }
+
+    if (!isAdjacent(
+            row1,
+            col1,
+            row2,
+            col2
+    )) {
+        return;
+    }
+
+    swap(
+            row1,
+            col1,
+            row2,
+            col2
+    );
+
+    Set<Integer> matches =
+            findMatches();
+
+    if (matches.isEmpty()) {
+
+        swap(
+                row1,
+                col1,
+                row2,
+                col2
+        );
+
+        return;
+    }
+
+    busy = true;
+
+    moves--;
+
+    resolveMatches();
+
+    result.update(level, score, moves);
+
+    busy = false;
+
+    if (moves <= 0) {
+
+        if (score >= level * LEVEL_SCORE) {
+
+            result.update(level, score, moves);
+            result.win();
+
+        } else {
+
+            result.update(level, score, moves);
+            result.lose();
+        }
+
+        game.setScreen(
+                new ResultScreen(game, result)
+        );
+    }
+}
                         startRow,
                         startCol,
                         targetRow,
