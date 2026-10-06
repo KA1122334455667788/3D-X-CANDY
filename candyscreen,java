@@ -51,7 +51,8 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
     private float touchDownY;
 
     private boolean busy = false;
-    private float animationTimer = 0f;
+ private final CandyResult result = new CandyResult();
+private float animationTimer = 0f;
 
     private final Vector3 touchPoint = new Vector3();
     private final Plane boardPlane =
