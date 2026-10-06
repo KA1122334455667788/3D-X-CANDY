@@ -6,7 +6,7 @@ public class CandyGame extends Game {
 
     @Override
     public void create() {
-        setScreen(new CandyScreen());
+        setScreen(new CandyScreen(this));
     }
 
     @Override
