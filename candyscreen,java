@@ -637,7 +637,7 @@ private float animationTimer = 0f;
         moves--;
 
         resolveMatches();
-
+result.update(level, score, moves);
         busy = false;
 
         if (moves <= 0) {
