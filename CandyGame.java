@@ -5,9 +5,9 @@ import com.badlogic.gdx.Game;
 public class CandyGame extends Game {
 
     @Override
-    public void create() {
-        setScreen(new CandyScreen(this));
-    }
+public void create() {
+    setScreen(new HomeScreen(this));
+}
 
     @Override
     public void dispose() {
