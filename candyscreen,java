@@ -13,10 +13,10 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -27,7 +27,9 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
     private static final int SIZE = 7;
     private static final float CELL = 1.35f;
     private static final int CANDY_TYPES = 6;
+
     private static final int START_MOVES = 25;
+    private static final int LEVEL_SCORE = 1000;
 
     private final ModelBatch modelBatch;
     private final Environment environment;
@@ -51,11 +53,17 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
     private boolean busy = false;
     private float animationTimer = 0f;
 
+    private final Vector3 touchPoint = new Vector3();
+    private final Plane boardPlane =
+            new Plane(new Vector3(0f, 1f, 0f), 0f);
+
     public CandyScreen() {
+
         modelBatch = new ModelBatch();
         modelBuilder = new ModelBuilder();
 
         environment = new Environment();
+
         environment.set(
                 new ColorAttribute(
                         ColorAttribute.AmbientLight,
@@ -79,8 +87,10 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
         );
 
         camera.lookAt(0f, 0f, 0f);
+
         camera.near = 0.1f;
         camera.far = 100f;
+
         camera.update();
 
         createBoard();
@@ -89,7 +99,9 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
     }
 
     private void createBoard() {
+
         for (int row = 0; row < SIZE; row++) {
+
             for (int col = 0; col < SIZE; col++) {
 
                 int type;
@@ -98,79 +110,126 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
                     type = random.nextInt(CANDY_TYPES);
                 } while (createsMatch(row, col, type));
 
-                board[row][col] = createCandy(type, row, col);
+                board[row][col] =
+                        createCandy(type, row, col);
             }
         }
     }
 
-    private Candy createCandy(int type, int row, int col) {
+    private Candy createCandy(
+            int type,
+            int row,
+            int col
+    ) {
 
         Color color;
 
         switch (type) {
+
             case 0:
-                color = new Color(1f, 0.15f, 0.25f, 1f);
+                color = new Color(
+                        1f,
+                        0.15f,
+                        0.25f,
+                        1f
+                );
                 break;
 
             case 1:
-                color = new Color(1f, 0.75f, 0.05f, 1f);
+                color = new Color(
+                        1f,
+                        0.75f,
+                        0.05f,
+                        1f
+                );
                 break;
 
             case 2:
-                color = new Color(0.15f, 0.85f, 1f, 1f);
+                color = new Color(
+                        0.15f,
+                        0.85f,
+                        1f,
+                        1f
+                );
                 break;
 
             case 3:
-                color = new Color(0.35f, 1f, 0.35f, 1f);
+                color = new Color(
+                        0.35f,
+                        1f,
+                        0.35f,
+                        1f
+                );
                 break;
 
             case 4:
-                color = new Color(0.75f, 0.25f, 1f, 1f);
+                color = new Color(
+                        0.75f,
+                        0.25f,
+                        1f,
+                        1f
+                );
                 break;
 
             default:
-                color = new Color(1f, 0.35f, 0.65f, 1f);
+                color = new Color(
+                        1f,
+                        0.35f,
+                        0.65f,
+                        1f
+                );
                 break;
         }
 
-        Material material = new Material(
-                ColorAttribute.createDiffuse(color)
-        );
+        Material material =
+                new Material(
+                        ColorAttribute.createDiffuse(color)
+                );
 
-        Model model = modelBuilder.createSphere(
-                0.48f,
-                0.48f,
-                0.48f,
-                24,
-                24,
-                material,
-                VertexAttributes.Usage.Position |
-                        VertexAttributes.Usage.Normal
-        );
+        Model model =
+                modelBuilder.createSphere(
+                        0.48f,
+                        0.48f,
+                        0.48f,
+                        24,
+                        24,
+                        material,
+                        VertexAttributes.Usage.Position |
+                                VertexAttributes.Usage.Normal
+                );
 
         models.add(model);
 
-        ModelInstance instance = new ModelInstance(model);
+        ModelInstance instance =
+                new ModelInstance(model);
 
-        float x = boardX(col);
-        float z = boardZ(row);
-
-        instance.transform.setToTranslation(x, 0f, z);
+        instance.transform.setToTranslation(
+                boardX(col),
+                0f,
+                boardZ(row)
+        );
 
         return new Candy(type, instance);
     }
 
     private float boardX(int col) {
+
         return (col - (SIZE - 1) / 2f) * CELL;
     }
 
     private float boardZ(int row) {
+
         return (row - (SIZE - 1) / 2f) * CELL;
     }
 
-    private boolean createsMatch(int row, int col, int type) {
+    private boolean createsMatch(
+            int row,
+            int col,
+            int type
+    ) {
 
         if (col >= 2) {
+
             Candy a = board[row][col - 1];
             Candy b = board[row][col - 2];
 
@@ -178,11 +237,13 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
                     b != null &&
                     a.type == type &&
                     b.type == type) {
+
                 return true;
             }
         }
 
         if (row >= 2) {
+
             Candy a = board[row - 1][col];
             Candy b = board[row - 2][col];
 
@@ -190,6 +251,7 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
                     b != null &&
                     a.type == type &&
                     b.type == type) {
+
                 return true;
             }
         }
@@ -219,4 +281,639 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
         modelBatch.begin(camera);
 
         for (int row = 0; row < SIZE; row++) {
-            for (int col =
+
+            for (int col = 0; col < SIZE; col++) {
+
+                Candy candy = board[row][col];
+
+                if (candy != null) {
+
+                    updateCandyPosition(
+                            candy,
+                            row,
+                            col
+                    );
+
+                    modelBatch.render(
+                            candy.instance,
+                            environment
+                    );
+                }
+            }
+        }
+
+        modelBatch.end();
+    }
+
+    private void updateCandyPosition(
+            Candy candy,
+            int row,
+            int col
+    ) {
+
+        float x = boardX(col);
+        float z = boardZ(row);
+
+        candy.instance.transform.setToTranslation(
+                x,
+                0f,
+                z
+        );
+
+        if (row == selectedRow &&
+                col == selectedCol) {
+
+            float pulse =
+                    1f +
+                            0.10f *
+                                    (float) Math.sin(
+                                            animationTimer * 8f
+                                    );
+
+            candy.instance.transform.scale(
+                    pulse,
+                    pulse,
+                    pulse
+            );
+        }
+    }
+
+    @Override
+    public boolean touchDown(
+            int screenX,
+            int screenY,
+            int pointer,
+            int button
+    ) {
+
+        if (busy) {
+            return true;
+        }
+
+        touchDownX = screenX;
+        touchDownY = screenY;
+
+        return true;
+    }
+
+    @Override
+    public boolean touchUp(
+            int screenX,
+            int screenY,
+            int pointer,
+            int button
+    ) {
+
+        if (busy) {
+            return true;
+        }
+
+        float dx = screenX - touchDownX;
+        float dy = screenY - touchDownY;
+
+        float distance =
+                (float) Math.sqrt(
+                        dx * dx + dy * dy
+                );
+
+        int row;
+        int col;
+
+        if (distance > 35f) {
+
+            int startRow;
+            int startCol;
+
+            if (!screenToBoard(
+                    (int) touchDownX,
+                    (int) touchDownY
+            )) {
+                return true;
+            }
+
+            startRow = selectedRow;
+            startCol = selectedCol;
+
+            if (!screenToBoard(
+                    screenX,
+                    screenY
+            )) {
+                selectedRow = -1;
+                selectedCol = -1;
+                return true;
+            }
+
+            row = selectedRow;
+            col = selectedCol;
+
+            selectedRow = -1;
+            selectedCol = -1;
+
+            int targetRow = startRow;
+            int targetCol = startCol;
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+
+                if (dx > 0) {
+                    targetCol++;
+                } else {
+                    targetCol--;
+                }
+
+            } else {
+
+                if (dy > 0) {
+                    targetRow--;
+                } else {
+                    targetRow++;
+                }
+            }
+
+            if (isInside(
+                    targetRow,
+                    targetCol
+            )) {
+
+                trySwap(
+                        startRow,
+                        startCol,
+                        targetRow,
+                        targetCol
+                );
+            }
+
+            return true;
+        }
+
+        if (screenToBoard(
+                screenX,
+                screenY
+        )) {
+
+            row = selectedRow;
+            col = selectedCol;
+
+            handleSelection(row, col);
+        }
+
+        return true;
+    }
+
+    private void handleSelection(
+            int row,
+            int col
+    ) {
+
+        if (selectedRow == -1) {
+
+            selectedRow = row;
+            selectedCol = col;
+
+            return;
+        }
+
+        if (selectedRow == row &&
+                selectedCol == col) {
+
+            selectedRow = -1;
+            selectedCol = -1;
+
+            return;
+        }
+
+        if (isAdjacent(
+                selectedRow,
+                selectedCol,
+                row,
+                col
+        )) {
+
+            trySwap(
+                    selectedRow,
+                    selectedCol,
+                    row,
+                    col
+            );
+        }
+
+        selectedRow = -1;
+        selectedCol = -1;
+    }
+
+    private boolean screenToBoard(
+            int screenX,
+            int screenY
+    ) {
+
+        Ray ray =
+                camera.getPickRay(
+                        screenX,
+                        screenY
+                );
+
+        if (!ray.intersects(
+                boardPlane,
+                touchPoint
+        )) {
+
+            return false;
+        }
+
+        float boardHalf =
+                ((SIZE - 1) / 2f) * CELL;
+
+        float x = touchPoint.x;
+        float z = touchPoint.z;
+
+        float colFloat =
+                x / CELL +
+                        (SIZE - 1) / 2f;
+
+        float rowFloat =
+                z / CELL +
+                        (SIZE - 1) / 2f;
+
+        int col =
+                Math.round(colFloat);
+
+        int row =
+                Math.round(rowFloat);
+
+        if (!isInside(row, col)) {
+            return false;
+        }
+
+        float centerX = boardX(col);
+        float centerZ = boardZ(row);
+
+        if (Math.abs(x - centerX) >
+                CELL * 0.50f) {
+
+            return false;
+        }
+
+        if (Math.abs(z - centerZ) >
+                CELL * 0.50f) {
+
+            return false;
+        }
+
+        selectedRow = row;
+        selectedCol = col;
+
+        return true;
+    }
+
+    private boolean isInside(
+            int row,
+            int col
+    ) {
+
+        return row >= 0 &&
+                row < SIZE &&
+                col >= 0 &&
+                col < SIZE;
+    }
+
+    private boolean isAdjacent(
+            int row1,
+            int col1,
+            int row2,
+            int col2
+    ) {
+
+        int distance =
+                Math.abs(row1 - row2) +
+                        Math.abs(col1 - col2);
+
+        return distance == 1;
+    }
+
+    private void trySwap(
+            int row1,
+            int col1,
+            int row2,
+            int col2
+    ) {
+
+        if (busy) {
+            return;
+        }
+
+        if (!isAdjacent(
+                row1,
+                col1,
+                row2,
+                col2
+        )) {
+            return;
+        }
+
+        swap(
+                row1,
+                col1,
+                row2,
+                col2
+        );
+
+        Set<Integer> matches =
+                findMatches();
+
+        if (matches.isEmpty()) {
+
+            swap(
+                    row1,
+                    col1,
+                    row2,
+                    col2
+            );
+
+            return;
+        }
+
+        busy = true;
+
+        moves--;
+
+        resolveMatches();
+
+        busy = false;
+
+        if (moves <= 0) {
+
+            if (score >= level * LEVEL_SCORE) {
+
+                level++;
+                moves = START_MOVES;
+            } else {
+
+                level = 1;
+                score = 0;
+                moves = START_MOVES;
+            }
+        }
+    }
+
+    private void swap(
+            int row1,
+            int col1,
+            int row2,
+            int col2
+    ) {
+
+        Candy temp =
+                board[row1][col1];
+
+        board[row1][col1] =
+                board[row2][col2];
+
+        board[row2][col2] =
+                temp;
+    }
+
+    private Set<Integer> findMatches() {
+
+        Set<Integer> matches =
+                new HashSet<>();
+
+        for (int row = 0; row < SIZE; row++) {
+
+            int start = 0;
+
+            while (start < SIZE) {
+
+                Candy first =
+                        board[row][start];
+
+                if (first == null) {
+                    start++;
+                    continue;
+                }
+
+                int end = start + 1;
+
+                while (end < SIZE &&
+                        board[row][end] != null &&
+                        board[row][end].type ==
+                                first.type) {
+
+                    end++;
+                }
+
+                if (end - start >= 3) {
+
+                    for (int col = start;
+                         col < end;
+                         col++) {
+
+                        matches.add(
+                                row * SIZE + col
+                        );
+                    }
+                }
+
+                start = end;
+            }
+        }
+
+        for (int col = 0; col < SIZE; col++) {
+
+            int start = 0;
+
+            while (start < SIZE) {
+
+                Candy first =
+                        board[start][col];
+
+                if (first == null) {
+                    start++;
+                    continue;
+                }
+
+                int end = start + 1;
+
+                while (end < SIZE &&
+                        board[end][col] != null &&
+                        board[end][col].type ==
+                                first.type) {
+
+                    end++;
+                }
+
+                if (end - start >= 3) {
+
+                    for (int row = start;
+                         row < end;
+                         row++) {
+
+                        matches.add(
+                                row * SIZE + col
+                        );
+                    }
+                }
+
+                start = end;
+            }
+        }
+
+        return matches;
+    }
+
+    private void resolveMatches() {
+
+        int combo = 0;
+
+        while (true) {
+
+            Set<Integer> matches =
+                    findMatches();
+
+            if (matches.isEmpty()) {
+                break;
+            }
+
+            combo++;
+
+            int gained =
+                    matches.size() *
+                            100 *
+                            combo;
+
+            score += gained;
+
+            clearMatches(matches);
+
+            applyGravity();
+
+            refillBoard();
+        }
+    }
+
+    private void clearMatches(
+            Set<Integer> matches
+    ) {
+
+        for (Integer index : matches) {
+
+            int row =
+                    index / SIZE;
+
+            int col =
+                    index % SIZE;
+
+            board[row][col] = null;
+        }
+    }
+
+    private void applyGravity() {
+
+        for (int col = 0; col < SIZE; col++) {
+
+            int writeRow = SIZE - 1;
+
+            for (int row = SIZE - 1;
+                 row >= 0;
+                 row--) {
+
+                Candy candy =
+                        board[row][col];
+
+                if (candy != null) {
+
+                    board[writeRow][col] =
+                            candy;
+
+                    if (writeRow != row) {
+                        board[row][col] = null;
+                    }
+
+                    writeRow--;
+                }
+            }
+
+            while (writeRow >= 0) {
+
+                board[writeRow][col] = null;
+                writeRow--;
+            }
+        }
+    }
+
+    private void refillBoard() {
+
+        for (int row = 0; row < SIZE; row++) {
+
+            for (int col = 0; col < SIZE; col++) {
+
+                if (board[row][col] == null) {
+
+                    int type =
+                            random.nextInt(
+                                    CANDY_TYPES
+                            );
+
+                    board[row][col] =
+                            createCandy(
+                                    type,
+                                    row,
+                                    col
+                            );
+                }
+            }
+        }
+    }
+
+    @Override
+    public void resize(
+            int width,
+            int height
+    ) {
+
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+        camera.update();
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void hide() {
+    }
+
+    @Override
+    public void show() {
+    }
+
+    @Override
+    public void dispose() {
+
+        modelBatch.dispose();
+
+        for (Model model : models) {
+            model.dispose();
+        }
+
+        models.clear();
+    }
+
+    private static class Candy {
+
+        final int type;
+        final ModelInstance instance;
+
+        Candy(
+                int type,
+                ModelInstance instance
+        ) {
+
+            this.type = type;
+            this.instance = instance;
+        }
+    }
+}
