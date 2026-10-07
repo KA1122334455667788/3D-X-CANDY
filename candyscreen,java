@@ -100,7 +100,7 @@ modelBuilder = new ModelBuilder();
         camera.far = 100f;
 
         camera.update();
-
+hudBatch.setProjectionMatrix(camera.combined);
         createBoard();
 
         Gdx.input.setInputProcessor(this);
