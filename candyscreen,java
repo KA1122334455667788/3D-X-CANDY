@@ -68,6 +68,7 @@ private final GlyphLayout hudLayout;
 
         modelBatch = new ModelBatch();
         hudBatch = new SpriteBatch();
+hudFont = new BitmapFont();
 modelBuilder = new ModelBuilder();
        environment = new Environment();
         environment.set(
