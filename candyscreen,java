@@ -312,7 +312,45 @@ hudBatch.setProjectionMatrix(camera.combined);
 
         modelBatch.end();
     }
+hudBatch.begin();
 
+hudFont.getData().setScale(1.1f);
+
+hudFont.draw(
+        hudBatch,
+        "LEVEL: " + level,
+        20f,
+        Gdx.graphics.getHeight() - 25f
+);
+
+hudFont.draw(
+        hudBatch,
+        "SCORE: " + score,
+       20f,
+Gdx.graphics.getHeight() - 60f
+);
+
+hudFont.draw(
+        hudBatch,
+        "MOVES: " + moves,
+        hudBatch.end();
+20f,
+        Gdx.graphics.getHeight() - 95f
+);
+
+hudBatch.end();
+20f,
+        Gdx.graphics.getHeight() - 60f
+);
+
+hudFont.draw(
+        hudBatch,
+        "MOVES: " + moves,
+        20f,
+        Gdx.graphics.getHeight() - 95f
+);
+
+hudBatch.end();
     private void updateCandyPosition(
             Candy candy,
             int row,
