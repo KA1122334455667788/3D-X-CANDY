@@ -32,7 +32,7 @@ public class CandyScreen extends InputAdapter implements com.badlogic.gdx.Screen
 
     private static final int START_MOVES = 25;
     private static final int LEVEL_SCORE = 1000;
-
+private static final int LEVEL_SCORE_STEP = 250;
     private final ModelBatch modelBatch;
     private final Environment environment;
     private final PerspectiveCamera camera;
@@ -532,9 +532,9 @@ hudBatch.end();
 
     busy = false;
 
-    if (moves <= 0) {
+    if (score >= LEVEL_SCORE + (level - 1) * LEVEL_SCORE_STEP || moves <= 0)
 
-        if (score >= level * LEVEL_SCORE) {
+        if (score >= LEVEL_SCORE + (level - 1) * LEVEL_SCORE_STEP)
 
             result.update(level, score, moves);
             result.win();
