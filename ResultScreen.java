@@ -181,10 +181,8 @@ public class ResultScreen extends InputAdapter implements Screen {
             int button
     ) {
 
-        result.reset();
-
-        game.setScreen(
-                new CandyScreen(game)
+        int nextLevel = result.isWon() ? result.getLevel() + 1 : result.getLevel();
+game.setScreen(new CandyScreen(game, nextLevel));
         );
 
         return true;
