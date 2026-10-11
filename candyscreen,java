@@ -45,7 +45,7 @@ private static final int LEVEL_SCORE_STEP = 250;
     private int score = 0;
     private int moves = START_MOVES;
     private int level = 1;
-
+private int targetScore = LEVEL_SCORE;
     private int selectedRow = -1;
     private int selectedCol = -1;
 
@@ -532,9 +532,9 @@ hudBatch.end();
 
     busy = false;
 
-    if (score >= LEVEL_SCORE + (level - 1) * LEVEL_SCORE_STEP || moves <= 0)
+    if (score >= targetScore || moves <= 0) {
 
-        if (score >= LEVEL_SCORE + (level - 1) * LEVEL_SCORE_STEP)
+        if (score >= targetScore) {
 
             result.update(level, score, moves);
             result.win();
