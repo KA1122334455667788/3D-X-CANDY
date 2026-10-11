@@ -62,51 +62,51 @@ private final GlyphLayout hudLayout;
     private final Vector3 touchPoint = new Vector3();
     private final Plane boardPlane =
             new Plane(new Vector3(0f, 1f, 0f), 0f);
+public CandyScreen(CandyGame game) {
+    this(game, 1);
+}
 
-    public CandyScreen(CandyGame game) {
+public CandyScreen(CandyGame game, int startLevel) {
     this.game = game;
+    this.level = Math.max(1, startLevel);
+    this.targetScore = LEVEL_SCORE + (this.level - 1) * LEVEL_SCORE_STEP;
 
-        modelBatch = new ModelBatch();
-        hudBatch = new SpriteBatch();
-hudFont = new BitmapFont();
-hudLayout = new GlyphLayout();
-modelBuilder = new ModelBuilder();
-       environment = new Environment();
-        environment.set(
-                new ColorAttribute(
-                        ColorAttribute.AmbientLight,
-                        0.75f,
-                        0.75f,
-                        0.75f,
-                        1f
-                )
-        );
+    modelBatch = new ModelBatch();
+    hudBatch = new SpriteBatch();
+    hudFont = new BitmapFont();
+    hudLayout = new GlyphLayout();
+    modelBuilder = new ModelBuilder();
 
-        camera = new PerspectiveCamera(
-                55f,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight()
-        );
+    environment = new Environment();
+    environment.set(
+            new ColorAttribute(
+                    ColorAttribute.AmbientLight,
+                    0.75f,
+                    0.75f,
+                    0.75f,
+                    1f
+            )
+    );
 
-        camera.position.set(
-                0f,
-                10.5f,
-                9.5f
-        );
+    camera = new PerspectiveCamera(
+            55f,
+            Gdx.graphics.getWidth(),
+            Gdx.graphics.getHeight()
+    );
 
-        camera.lookAt(0f, 0f, 0f);
+    camera.position.set(0f, 10.5f, 9.5f);
+    camera.lookAt(0f, 0f, 0f);
+    camera.near = 0.1f;
+    camera.far = 100f;
+    camera.update();
 
-        camera.near = 0.1f;
-        camera.far = 100f;
+    hudBatch.setProjectionMatrix(camera.combined);
+    createBoard();
 
-        camera.update();
-hudBatch.setProjectionMatrix(camera.combined);
-        createBoard();
+    Gdx.input.setInputProcessor(this);
+}
 
-        Gdx.input.setInputProcessor(this);
-    }
-
-    private void createBoard() {
+private void createBoard() {
 
         for (int row = 0; row < SIZE; row++) {
 
